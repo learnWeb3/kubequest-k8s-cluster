@@ -1,0 +1,15 @@
+module "commons" {
+  source = "./commons"
+}
+
+module "andrew_staging" {
+  depends_on = [module.commons]
+  source = "./andrew-staging"
+  MQTT_AUTH_PASSWORD = var.MQTT_AUTH_PASSWORD
+  KAFKA_SASL_PASSWORD = var.KAFKA_SASL_PASSWORD
+  KAFKA_ECOMMERCE_SASL_PASSWORD = var.KAFKA_ECOMMERCE_SASL_PASSWORD
+  GOOGLE_STORAGE_PRIVATE_KEY = var.GOOGLE_STORAGE_PRIVATE_KEY
+  KEYCLOAK_ADMIN_CLIENT_SECRET = var.KEYCLOAK_ADMIN_CLIENT_SECRET
+  OPENSEARCH_URL = var.OPENSEARCH_URL
+  MONGO_URI = var.MONGO_URI
+}
