@@ -1,2 +1,5 @@
 secret.tfvars
 .terraform
+secret_passphrase.txt
+keys
+.DS_Store

@@ -1,0 +1,58 @@
+# name: "Terraform"
+
+# on:
+#   push:
+#     branches: ["master"]
+#   pull_request:
+
+# permissions:
+#   contents: read
+
+# jobs:
+#   terraform:
+#     name: "Terraform"
+#     runs-on: ubuntu-latest
+#     environment: production
+
+#     defaults:
+#       run:
+#         shell: bash
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       - name: Decrypt secret.tfvars.gpg
+#         run: gpg --quiet --batch --yes --decrypt --passphrase="$SECRET_PASSPHRASE" --output ./secret.tfvars ./secret.tfvars.gpg
+#         env:
+#           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
+
+#       - name: Setup terraform variables
+#         id: vars
+#         run: |-
+#           cat > pipeline.auto.tfvars <<EOF
+#           region="${{ vars.GOOGLE_PROJECT_REGION }}" 
+#           project="${{ vars.GOOGLE_PROJECT_ID }}"
+#           EOF
+
+#       - name: Terraform Init
+#         run: terraform init
+#         env:
+#           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+#       - name: Terraform Format
+#         run: terraform fmt -check
+
+#       - name: Terraform Plan
+#         run: terraform plan -input=false -var-file=./secret.tfvars
+#         env:
+#           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+#       - name: Terraform Apply
+#         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+#         run: terraform apply -auto-approve -input=false -var-file=./secret.tfvars
+#         env:
+#           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}

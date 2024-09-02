@@ -1,0 +1,67 @@
+# Default values for kube-prometheus-stack.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+persistence:
+  enabled: true
+  type: sts
+  storageClassName: "standard"
+  accessModes:
+    - ReadWriteOnce
+  size: 20Gi
+  finalizers:
+    - kubernetes.io/pvc-protection
+grafana:
+  defaultDashboardsTimezone: browser
+  adminPassword: "${grafanaAdminPassword}"
+  grafana.ini:
+    server:
+      root_url: "https://metrics.students-epitech.ovh"
+      serve_from_sub_path: true
+    smtp:
+      enabled: true
+      host: smtp.gmail.com:587
+      ;cert_file:
+      ;key_file:
+      skip_verify: true
+      from_address: alertmanager.students.epitech.sla@gmail.com
+      from_name: Grafana
+  smtp:
+    existingSecret: "${mailSecret}"
+    userKey: "user"
+    passwordKey: "password"
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: "default"
+          orgId: 1
+          folder: "kubequest"
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+  dashboards:
+    default:
+      mysql:
+        gnetId: 14031
+        datasource: Prometheus
+      blackbox-exporter:
+        gnetId: 7587
+        datasource: Prometheus
+      ingress-nginx: 
+        gnetId: 14314
+        datasource: Prometheus
+  additionalDataSources:
+    - name: loki-kubequest
+      type: loki
+      url: http://loki-gateway.lokki.svc.cluster.local/
+      jsonData:
+        httpHeaderName1: "X-Scope-OrgID"
+      secureJsonData:
+        httpHeaderValue1: "kubequest"
+
+prometheusSpec:
+  retention: 10d
+  rententionSize: ""
